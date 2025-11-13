@@ -33,7 +33,7 @@ closeIcon.addEventListener("click", function() {
 });
 
 (function(){
-  emailjs.init("fGB7WW84J4fUle8U8"); // Replace with your EmailJS public key 
+  emailjs.init("nr-S3PnMZ4THBfF5j"); // Replace with your EmailJS public key 
 })();
 
 document.getElementById("sendBtn").addEventListener("click", function() {
