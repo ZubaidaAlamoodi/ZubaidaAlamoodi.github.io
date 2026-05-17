@@ -118,8 +118,17 @@ function closeModal() {
 function playProjectVideos() {
   projectMedia.forEach((video) => {
     video.muted = true;
+    video.defaultMuted = true;
     video.loop = true;
     video.playsInline = true;
+    video.autoplay = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("loop", "");
+    video.setAttribute("autoplay", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    video.setAttribute("x5-playsinline", "");
+    video.setAttribute("x5-video-player-type", "h5");
     const playRequest = video.play();
     if (playRequest) {
       playRequest.catch(() => {
@@ -130,8 +139,35 @@ function playProjectVideos() {
 }
 
 playProjectVideos();
-document.addEventListener("touchstart", playProjectVideos, { once: true });
-document.addEventListener("click", playProjectVideos, { once: true });
+projectMedia.forEach((video) => {
+  video.addEventListener("pause", () => {
+    if (!document.hidden) window.setTimeout(playProjectVideos, 250);
+  });
+  video.addEventListener("ended", () => {
+    video.currentTime = 0;
+    video.play().catch(() => {});
+  });
+});
+
+document.addEventListener("touchstart", playProjectVideos, { passive: true });
+document.addEventListener("click", playProjectVideos);
+document.addEventListener("scroll", playProjectVideos, { passive: true });
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) playProjectVideos();
+});
+window.addEventListener("pageshow", playProjectVideos);
+
+if ("IntersectionObserver" in window) {
+  const videoObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) playProjectVideos();
+      });
+    },
+    { threshold: 0.2 }
+  );
+  projectMedia.forEach((video) => videoObserver.observe(video));
+}
 
 projectButtons.forEach((button) => {
   button.addEventListener("click", () => openModal(button.dataset.project));
