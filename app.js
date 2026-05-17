@@ -1,7 +1,6 @@
 const sideBar = document.querySelector(".sidebar");
 const menu = document.querySelector(".menu-icon");
 const closeIcon = document.querySelector(".close-icon");
-const hoverSigns = document.querySelectorAll(".hover-sign");
 const projectMedia = document.querySelectorAll(".project-vidbox video");
 const projectButtons = document.querySelectorAll("[data-project]");
 const modal = document.querySelector(".portfolio-modal");
@@ -116,17 +115,23 @@ function closeModal() {
   document.body.classList.remove("modal-open");
 }
 
-projectMedia.forEach((video) => {
-  video.addEventListener("mouseenter", () => {
-    video.play();
-    hoverSigns.forEach((sign) => sign.classList.add("active"));
+function playProjectVideos() {
+  projectMedia.forEach((video) => {
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    const playRequest = video.play();
+    if (playRequest) {
+      playRequest.catch(() => {
+        // Some mobile browsers wait for the first user interaction before autoplaying.
+      });
+    }
   });
+}
 
-  video.addEventListener("mouseleave", () => {
-    video.pause();
-    hoverSigns.forEach((sign) => sign.classList.remove("active"));
-  });
-});
+playProjectVideos();
+document.addEventListener("touchstart", playProjectVideos, { once: true });
+document.addEventListener("click", playProjectVideos, { once: true });
 
 projectButtons.forEach((button) => {
   button.addEventListener("click", () => openModal(button.dataset.project));
